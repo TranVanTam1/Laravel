@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CarController;
+use App\Http\Controllers\PageController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,8 +14,11 @@ use App\Http\Controllers\CarController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('page.index');
 });
+Route::get('/', [PageController::class, 'index'])->name('index');
+Route::get('/product/{id}', [PageController::class, 'show'])->name('page.product');
+
 // Route::get('cars/{id}',[CarController::class,'show'])->name('car-show');
 
 // Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
@@ -29,4 +32,4 @@ Route::get('/', function () {
 // Route::put('/cars/{id}', [CarController::class, 'update'])->name('cars.update');
 
 // Route::delete('/cars/{id}', [CarController::class, 'destroy'])->name('cars.destroy');
-Route::resource('cars',CarController::class);
+// Route::resource('cars',CarController::class);
