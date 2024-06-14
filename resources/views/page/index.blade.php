@@ -75,12 +75,15 @@
                                             <div class="clearfix"></div>
                                         </div>
                                     </div>
+                                    <!-- cứ 4 sản phẩm thì ngắt dòng -->
+                                    @if($stt % 4==0)
+                                    <div class="space40">&nbsp;</div>
+                                    @endif
                                 </div>
-                                <!-- cứ 4 sản phẩm thì ngắt dòng -->
-                                @if($stt % 4==0)
-                                <div class="space40">&nbsp;</div>
-                                @endif
+                                
+                               
                                 @endforeach
+                                
                             </div> <!-- .beta-products-list -->
 							
 						<div class="space50">&nbsp;</div>
@@ -120,11 +123,12 @@
                                             <div class="clearfix"></div>
                                         </div>
                                     </div>
-                                </div>
-                                <!-- cứ 4 sản phẩm thì ngắt dòng -->
+                                     <!-- cứ 4 sản phẩm thì ngắt dòng -->
                                 @if($stt % 4==0)
                                 <div class="space40">&nbsp;</div>
                                 @endif
+                                </div>
+                               
                                 @endforeach
                             </div> <!-- .beta-products-list -->
 							{{ $products->links() }}

@@ -7,11 +7,11 @@
     <title>Contact Response</title>
 </head>
 <body>
-    <p>Dear {{ $name }},</p>
+    <p>Dear cô {{ $name }},</p>
     <p></p>
     <p>{{ $response }}</p>
     <p>
     <p>Thanks you ,</p>
-    <p>From Tâm Market</p>
+    <p>From Trần Văn Tâm </p>
 </body>
 </html>

@@ -124,7 +124,10 @@
                         </li>
                         <li>
                             <a href="#">
-                                <i class="bi bi-envelope-exclamatio"></i> Contacts<span class="fa arrow"></span>
+                                <i class="fa fa-bar-chart-o fa-fw"></i> Contacts @if($notViewedCount > 0)
+                                <span class="badge">{{ $notViewedCount +$viewedCount }}</span>
+                            @endif<span class="fa arrow"></span>
+                                
                               </a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -143,9 +146,7 @@
                                 </li>
                                 <li>
                                     <a href="{{ route('admin.getContactReplied')}}">Replied 
-                                        @if($repliedCount > 0)
-                                            <span class="badge">{{ $repliedCount }}</span>
-                                        @endif
+                                       
                                     </a>
                                 </li>
                             </ul>

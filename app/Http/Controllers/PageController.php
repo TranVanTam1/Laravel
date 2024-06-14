@@ -228,7 +228,11 @@ public function postLogin(Request $req){
     }
 
 }
-
-
+public function getOrderManagement(){
+    return view('page.account.order_management');
+}
+public function getPersonalInformation(){
+    return view('page.account.personal_information');
+}
 
 }

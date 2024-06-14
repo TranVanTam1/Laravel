@@ -5,13 +5,13 @@
         <div class="container">
             <div class="pull-left auto-width-left">
                 <ul class="top-menu menu-beta l-inline">
-                    <li><a href=""><i class="fa fa-home"></i> 90-92 Lê Thị Riêng, Bến Thành, Quận 1</a></li>
-                    <li><a href=""><i class="fa fa-phone"></i> 0163 296 7751</a></li>
+                    <li><a href=""><i class="fa fa-home"></i> Cách Mạng Tháng 8, Cẩm Lệ, Đà Nẵng</a></li>
+                    <li><a href=""><i class="fa fa-phone"></i> 0332541965</a></li>
                 </ul>
             </div>
             <div class="pull-right auto-width-right">
                 <ul class="top-details menu-beta l-inline">
-                    <li><a href="#"><i class="fa fa-user"></i>Tài khoản</a></li>
+                    <li><a href="{{route('getPersonalInformation')}}"><i class="fa fa-user"></i>Tài khoản</a></li>
                     @if(Auth::check())
                     <li><a href="#"><i class="fa fa-user"></i>Chào bạn {{ Auth::user()->full_name }}</a></li>
                     <li><a href="{{ route('getlogout') }} "><i class="fa fa-user"></i>Đăng xuất</a></li>
@@ -28,7 +28,7 @@
     <div class="header-body">
         <div class="container beta-relative">
             <div class="pull-left">
-                <a href="index.html" id="logo"><img src="/source/assets/dest/images/logo-cake.png" width="200px" alt=""></a>
+                <a href="index.html" id="logo"><img src="/images/mm-logo.png" width="200px" alt=""></a>
             </div>
             <div class="pull-right beta-components space-left ov">
                 <div class="space10">&nbsp;</div>
@@ -88,6 +88,7 @@
             <div class="clearfix"></div>
         </div> <!-- .container -->
     </div> <!-- .header-body -->
+    
     <div class="header-bottom" style="background-color: #0277b8;">
         <div class="container">
             <a class="visible-xs beta-menu-toggle pull-right" href="#"><span class='beta-menu-toggle-text'>Menu</span> <i class="fa fa-bars"></i></a>
@@ -95,14 +96,13 @@
             <nav class="main-menu">
                 <ul class="l-inline ov">
                     <li><a href="/">Trang chủ</a></li>
-                    <li><a href="">Sản phẩm</a>
+                    <li><a href="#">Sản phẩm</a>
                         <ul class="sub-menu">
                             @isset($producttypes)
                                 @foreach ($producttypes as $producttype)
                                     <li><a href="{{ route('getProductType', ['product_type' => $producttype->id]) }}">{{ $producttype->name }}</a></li>
                                 @endforeach
                             @endisset
-                          
                         </ul>
                     </li>
                     <li><a href="about.html">Giới thiệu</a></li>

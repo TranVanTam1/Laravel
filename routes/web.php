@@ -34,6 +34,11 @@ Route::get('/logout',[PageController::class,'getLogout'])->name('getlogout');
 Route::get('/contacts',[PageController::class,'getContact'])->name('getContact');
 Route::post('/contacts',[PageController::class,'postContact'])->name('postContact');
 Route::get('/product_type/{product_type}', [PageController::class,'getProductsByType'])->name('getProductType');
+//Route::get('/order-management', function () {return view('page.account.order_management');});
+Route::get('/order-management',[PageController::class,'getOrderManagement'])->name('getOrderManagement');
+//Route::get('/personal-information', function () {return view('page.account.personal_information');});
+Route::get('/personal-information',[PageController::class,'getPersonalInformation'])->name('getPersonalInformation');
+
 
 // Route::get('cars/{id}',[CarController::class,'show'])->name('car-show');
 // Route::get('/admin/login', function () {return view('admin.login');});
