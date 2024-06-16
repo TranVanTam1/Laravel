@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 use App\Models\Type;
 use App\Models\User;
-
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\File;
 class UserController extends Controller
 {
 
@@ -23,7 +23,7 @@ class UserController extends Controller
     {
         //
         $users= User::orderBy('created_at', 'desc')->paginate(15)->onEachSide(5);
-        return view('admin.list-user', compact('users'));
+        return view('admin.user.list-user', compact('users'));
 
     }
     //
@@ -63,12 +63,13 @@ class UserController extends Controller
     }
     public function getUserAdd()
     {
-        return view('admin.create-user');
+        return view('admin.user.create-user');
     }
     public function postUserAdd(Request $request)
     {
         // Validate the form data
-        $validatedData = $request->validate([
+        $validation = Validator::make($request->all(),
+        [
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|max:255',
@@ -76,21 +77,95 @@ class UserController extends Controller
             'address' => 'required|string|max:255',
             'level' => 'required|in:1,2,3',
         ]);
-
+        if ($validation->fails()){
+            return redirect()->route('admin.getUserAdd')->withErrors($validation)->withInput();
+        }
         // Create a new user instance
         $user = new User();
         $user->full_name = $request->input('full_name');
         $user->email = $request->input('email');
-         $user->password = $request->input('password');
+        $user->password=Hash::make($request->password);
+       
         $user->phone = $request->input('phone');
         $user->address = $request->input('address');
         $user->level = $request->input('level');
 
+      
         // Save the user to the database
         $user->save();
 
         // Redirect back with a success message
-        return redirect()->back()->with('success', 'User added successfully.');
+        return redirect()->route('admin.getUserList')->with('success', 'User added successfully.');
+    }
+      /**
+     * Show the form for editing the specified resource.
+     */
+    public function getUserEdit($id)
+    {
+        $user = User::findOrFail($id);
+      
+        // Trả về view edit
+        return view('admin.user.edit-user', compact('user'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
+    public function postUserEdit(Request $request, $id)
+    {
+       
+        $validation = Validator::make($request->all(), [
+            "full_name" => "required",
+            "email" => "required",
+            "password" => "required",
+            "phone" => "required",
+            "address" => "required",
+            "level" => "required",
+        ], [
+            "full_name.required" => "Vui lòng nhập họ và tên.",
+            "email.required" => "Vui lòng nhập địa chỉ email.",
+            "password.required" => "Vui lòng nhập mật khẩu.",
+            "phone.required" => "Vui lòng nhập số điện thoại.",
+            "address.required" => "Vui lòng nhập địa chỉ.",
+            "level.required" => "Vui lòng chọn cấp độ người dùng.",
+        ]);
+         
+        if ($validation->fails()){
+            return redirect('admin.getUserEdit')->withErrors($validation)->withInput();
+        }
+      // Kiểm tra xem email đã tồn tại trong cơ sở dữ liệu chưa
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            // Nếu email đã tồn tại, bạn có thể cập nhật thông tin của người dùng
+            $user->full_name = $request->full_name;
+            $user->phone = $request->phone;
+            $user->address = $request->address;
+            $user->level = $request->level;
+
+            $user->save();
+        }
+        return redirect()->route('admin.getUserList')->with('success', 'Thông tin người dùng đã được cập nhật thành công.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function getUserDelete($id)
+    {
+        //
+        // Tìm và xóa xe từ cơ sở dữ liệu
+    $user = User::find($id);
+
+    // Kiểm tra xem xe có tồn tại không
+    if(!$user) {
+        return redirect()->route('admin.getCateList')->with('error', 'Không tìm thấy người dùng .');
+    }
+ 
+    $user->delete();
+
+    // Chuyển hướng 
+    return redirect()->route('admin.getUserList')->with('success', 'Người dùng đã được xóa thành công.');
+
+    }
 }

@@ -5,10 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Slide extends Model
+class Contact extends Model
 {
-    protected $table='slide';
+    protected $table='contacts';
     use HasFactory;
-    public $timestamps = false;
-    
 }

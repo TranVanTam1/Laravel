@@ -32,7 +32,7 @@ class ProductController extends Controller
                 $products = Product::orderBy('created_at', 'desc')->paginate(15)->onEachSide(5);
             }
       
-        return view('admin.list-product', compact('products'));
+        return view('admin.product.list-product', compact('products'));
 
     }
 
@@ -43,7 +43,7 @@ class ProductController extends Controller
     {
         //
         $types = Type::all();
-        return view('admin.create-product',compact('types'));
+        return view('admin.product.create-product',compact('types'));
     }
 
     /**
@@ -107,7 +107,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $types = Type::all();
         // Trả về view edit
-        return view('admin.edit-product', compact('product','types'));
+        return view('admin.product.edit-product', compact('product','types'));
     }
 
     /**
@@ -135,7 +135,7 @@ class ProductController extends Controller
         {
             $file = $request->file('image');
             $name=time().'_'.$file->getClientOriginalName();
-            $destinationPath=public_path('images'); //project\public\images, //public_path(): trả về đường dẫn tới thư mục public
+            $destinationPath=public_path('images/produsts'); //project\public\images, //public_path(): trả về đường dẫn tới thư mục public
             $file->move($destinationPath, $name); //lưu hình ảnh vào thư mục public/images/
         }
      
@@ -169,12 +169,12 @@ class ProductController extends Controller
 
     // Kiểm tra xem xe có tồn tại không
     if(!$product) {
-        return redirect()->route('admin.getProductList')->with('error', 'Không tìm thấy xe.');
+        return redirect()->route('admin.getProductList')->with('error', 'Không tìm thấy Sản phẩm.');
     }
     // Lấy đường dẫn tới file ảnh
    
     // Kiểm tra xem file ảnh có tồn tại không
-    $linkImage=public_path('/source/image/product').$product->image;
+    $linkImage=public_path('images/products').$product->image;
         if(File::exists($linkImage)){
             File::delete($linkImage);
         }
@@ -183,7 +183,7 @@ class ProductController extends Controller
     $product->delete();
 
     // Chuyển hướng 
-    return redirect()->route('admin.getProductList')->with('success', 'Xe đã được xóa thành công.');
+    return redirect()->route('admin.getProductList')->with('success', 'Sản phẩm đã được xóa thành công.');
 
     }
 }

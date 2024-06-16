@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Bill;
-class Customer extends Model
+use App\Models\Mf;
+class Car extends Model
 {
+    
     use HasFactory;
-    protected $table = 'customer';
-  public function bills(): BelongsTo
+    protected $table='cars';
+    public function mf(): BelongsTo
     {
-        return $this->belongsTo(Bill::class,'id','id_customer');
+        return $this->belongsTo(Mf::class,'mf_id','id');
     }
 }

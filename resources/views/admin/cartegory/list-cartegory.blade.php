@@ -37,8 +37,15 @@
                                         <td>{{$type->name}}</td>
                                         <td>{{ \Illuminate\Support\Str::limit($type->description, 30, '...') }}</td>
                                         <td class="align-middle text-center"><img style="width: 100px;height: 70px;" src="/source/image/product/{{$type->image}}"></td>
-                                        <td class="center"><i class="fa fa-trash-o  fa-fw"></i><a href="#"> Delete</a></td>
-                                        <td class="center"><i class="fa fa-pencil fa-fw"></i> <a href="#">Edit</a></td>
+                                      
+                                        <td class="center"><i class="fa fa-pencil fa-fw"></i> <a href="{{route('admin.getCateEdit',['id'=>$type->id] )}}">Edit</a></td>
+                                        <td>
+                                            <form class="d-inline " action="{{ route('admin.getCateDelete',['id'=>$type->id] ) }}" method="POST" id="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">Delete</button>
+                                            </form>
+                                        </td>
                                     </tr>
                             @endforeach
                             @endisset

@@ -6,6 +6,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartegoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\SlideController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,7 +20,7 @@ use App\Http\Controllers\ContactController;
 */
 
 Route::get('/cart', function () {return view('page.shopping_cart');});
-Route::get('/text', function () {return view('page.text');});
+Route::get('/text', function () {return "Hello";})->name('text');
 Route::get('/', [PageController::class, 'index'])->name('index');
 Route::get('/product/{id}', [PageController::class, 'show'])->name('page.product');
 Route::get('/del-cart/{id}',[PageController::class,'delCartItem'])->name('page.xoagiohang');
@@ -38,6 +40,8 @@ Route::get('/product_type/{product_type}', [PageController::class,'getProductsBy
 Route::get('/order-management',[PageController::class,'getOrderManagement'])->name('getOrderManagement');
 //Route::get('/personal-information', function () {return view('page.account.personal_information');});
 Route::get('/personal-information',[PageController::class,'getPersonalInformation'])->name('getPersonalInformation');
+Route::post('/update-cart', [PageController::class, 'capnhatgiohang'])->name('page.capnhatgiohang');
+
 
 
 // Route::get('cars/{id}',[CarController::class,'show'])->name('car-show');
@@ -54,9 +58,9 @@ Route::group(['prefix'=>'admin','middleware'=>'adminLogin'],function(){
          Route::get('/danhsach',[CartegoryController::class,'getCateList'])->name('admin.getCateList');
          Route::get('/them',[CartegoryController::class,'getCateAdd'])->name('admin.getCateAdd');
          Route::post('/them',[CartegoryController::class,'postCateAdd'])->name('admin.postCateAdd');
-         Route::get('/xoa/{id}',[CartegoryController::class,'getCateDelete'])->name('admin.getCateDelete');
+         Route::delete('/xoa/{id}',[CartegoryController::class,'getCateDelete'])->name('admin.getCateDelete');
          Route::get('/sua/{id}',[CartegoryController::class,'getCateEdit'])->name('admin.getCateEdit');
-         Route::post('/sua/{id}',[CartegoryController::class,'postCateEdit'])->name('admin.postCateEdit');
+         Route::put('/sua/{id}',[CartegoryController::class,'postCateEdit'])->name('admin.postCateEdit');
          
      });
      Route::group(['prefix' => '/product'], function () {
@@ -90,6 +94,22 @@ Route::group(['prefix'=>'admin','middleware'=>'adminLogin'],function(){
           // Route::get('/sua/{id}',[ContactController::class,'getUserEdit'])->name('admin.getUserEdit');
           // Route::put('/sua/{id}',[ContactController::class,'postUserEdit'])->name('admin.postUserEdit');
      });
+     Route::group(['prefix' => '/bill'], function () {
+          // Product
+          // Route::get('/danhsach',[BillController::class,'getBillList'])->name('admin.getBillList');
+          Route::get('/danhsach/{status}', [BillController::class, 'getBillList'])->name('admin.bills.status');
+          Route::get('/chitiet/{id}',[BillController::class,'getBillDetail'])->name('admin.getBillDetail');
+          Route::put('/{id}/update-status/{newStatus}', [BillController::class, 'updateStatus'])->name('admin.bills.updateStatus');
+
+          // Route::get('/sua/{id}',[ContactController::class,'getUserEdit'])->name('admin.getUserEdit');
+          // Route::put('/sua/{id}',[ContactController::class,'postUserEdit'])->name('admin.postUserEdit');
+     });
+     Route::group(['prefix' => '/slide'], function () {
+          
+          Route::resource('/slides', SlideController::class);
+       
+     });
+     
 });
 Route::get('/input-email',[PageController::class,'getInputEmail'])->name('getInputEmail');
 Route::post('/input-email',[PageController::class,'postInputEmail'])->name('postInputEmail');

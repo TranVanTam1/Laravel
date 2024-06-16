@@ -8,10 +8,10 @@
                 <div class="row">
                     <!-- session('success') sinh ra từ hàm postDatHang trong PageController -->
                     @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     
                 </div>
                 <div class="row">
@@ -57,25 +57,27 @@
                             <div class="your-order-body" style="padding: 0px 10px">
                                 <div class="your-order-item">
                                     <div>
-                                    @if(Session::has('cart'))
-                                        @foreach($productCarts as $product)
-                                        <!-- one item -->
-                                    <div class="media">
-                                        <img width="25%" height="70px" src="/source/image/product/{{ $product['item']['image'] }}" alt="" class="pull-left">
-                                        <div class="media-body">
-                                            <p class="font-large">{{ $product['item']['name'] }}</p>
-                                            <span class="cart-item-amount">{{ $product['qty'] }}*<span>
-                                            @if($product['item']['promotion_price']==0)
-                                                {{ number_format($product['item']['unit_price']) }}@else
-                                                {{ number_format($product['item']['promotion_price']) }}
-                                            @endif
-                                        </span></span>
-                                        @php
-                                        $dongia=$product['item']['promotion_price']==0?$product['item']['unit_price']:$product['item']['promotion_price'];
-                                        $thanhtien=$dongia * $product['qty'];
-                                        @endphp
-                                        <span class="color-gray your-order-info">Số lượng: {{ $product['qty'] }} </span>
-                                        <span class="color-gray your-order-info">Thành tiền: {{ number_format($thanhtien) }} đồng</span>
+                                        @if(Session::has('cart'))
+                                            @foreach($productCarts as $product)
+                                            <!-- one item -->
+                                        <div class="media">
+                                            <img width="25%" height="70px" src="/source/image/product/{{ $product['item']['image'] }}" alt="" class="pull-left">
+                                            <div class="media-body">
+                                                    <p class="font-large">{{ $product['item']['name'] }}</p>
+                                                    <span class="cart-item-amount">{{ $product['qty'] }}*<span>
+                                                    @if($product['item']['promotion_price']==0)
+                                                        {{ number_format($product['item']['unit_price']) }}@else
+                                                        {{ number_format($product['item']['promotion_price']) }}
+                                                    @endif
+                                                </span></span>
+                                                @php
+                                                $dongia=$product['item']['promotion_price']==0?$product['item']['unit_price']:$product['item']['promotion_price'];
+                                                $thanhtien=$dongia * $product['qty'];
+                                                @endphp
+                                                <span class="color-gray your-order-info">Số lượng: {{ $product['qty'] }} </span>
+                                                <span class="color-gray your-order-info">Thành tiền: {{ number_format($thanhtien) }} đồng</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- end one item -->
@@ -92,7 +94,7 @@
                                 </div>
                                 @endif
                             </div>
-
+                        </div>
                             <div class="your-order-head"><h5>Hình thức thanh toán</h5></div>
                            
                             <div class="your-order-body">

@@ -9,6 +9,19 @@
                     <small>List</small>
                 </h1>
             </div>
+             
+            <br>
+                
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif 
+            @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
             <!-- /.col-lg-12 -->
             <table class="table table-striped table-bordered table-hover" id="dataTables-example">
                 <thead>
@@ -42,10 +55,15 @@
                         <td>{{ $hiddenEmail }}</td>
                         <td>{{ substr($user->phone, 0, -3) }}XXX</td>
                         <td>{{$user->address}}</td>
-                        <td>{{$user->level}}</td>
-                       
-                        <td class="center"><i class="fa fa-trash-o  fa-fw"></i><a href="#"> Delete</a></td>
-                        <td class="center"><i class="fa fa-pencil fa-fw"></i> <a href="#">Edit</a></td>
+                        <td>{{$user->level}}</td>             
+                        <td class="center"><i class="fa fa-pencil fa-fw"></i> <a href="{{ route('admin.getUserEdit', ['id'=>$user->id] ) }}">Edit</a></td>
+                        <td>
+                            <form class="d-inline " action="{{ route('admin.getUserDelete',['id'=>$user->id] ) }}" method="POST" id="delete-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                     @endforeach
                         

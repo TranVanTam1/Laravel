@@ -15,6 +15,7 @@ use App\Models\Contact;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 class PageController extends Controller
 {
     //
@@ -65,6 +66,7 @@ class PageController extends Controller
         $customer->address=$request->input('address');
         $customer->phone_number=$request->input('phone_number');
         $customer->note=$request->input('notes');
+        
         $customer->save();
 
         $bill=new Bill();
@@ -73,6 +75,7 @@ class PageController extends Controller
         $bill->total=$cart->totalPrice;
         $bill->payment=$request->input('payment_method');
         $bill->note=$request->input('notes');
+        $bill->status ="New";
         $bill->save();
 
         foreach($cart->items as $key=>$value)
@@ -88,6 +91,37 @@ class PageController extends Controller
         return redirect()->back()->with('success','Đặt hàng thành công');
 
     }
+    public function capnhatgiohang(Request $request)
+    {
+        try {
+            $productId = $request->input('id');
+            $quantity = $request->input('quantity');
+    
+            $cart = session()->has('cart') ? session()->get('cart') : [];
+    
+            if (array_key_exists($productId, $cart)) {
+                $cart[$productId]['qty'] = $quantity;
+                session()->put('cart', $cart);
+    
+                $product = Product::find($productId);
+    
+                if ($product) {
+                    $unitPrice = $product->promotion_price == 0 ? $product->unit_price : $product->promotion_price;
+                    return response()->json([
+                        'unitPrice' => $unitPrice,
+                    ]);
+                } else {
+                    return response()->json(['error' => 'Product not found.'], 404);
+                }
+            } else {
+                return response()->json(['error' => 'Product not found in cart.'], 404);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error updating cart: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while updating cart.'], 500);
+        }
+    }
+
     public function getProductsByType($product_type) {
         // Retrieve products based on $product_type
         $new_products = Product::where('id_type', $product_type)->where('new', 1)->get();

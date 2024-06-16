@@ -77,7 +77,7 @@
 
                                     <div class="center">
                                         <div class="space10">&nbsp;</div>
-                                        <a href="{{ route('page.getdathang') }}" class="beta-btn primary text-center">Đặt hàng <i class="fa fa-chevron-right"></i></a>
+                                        <a href="/cart" class="beta-btn primary text-center">Giỏ hàng <i class="fa fa-chevron-right"></i></a>
                                     </div>
                                 </div>
                             </div>

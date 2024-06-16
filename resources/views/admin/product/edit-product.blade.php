@@ -37,8 +37,8 @@
                     </div>
                     <div class="form-group">
                         <label for="unit">Đơn vị:</label>
-                        <select class="form-control" name="unit" id="">
-                            <option value=""></option>
+                        <select class="form-control  @error('unit') is-invalid @enderror" name="unit" id="">
+                            <option value="{{$product->unit}}">{{$product->unit}}</option>
                             <option value="hộp">hộp</option>
                             <option value="cái">cái</option>
                         </select>
@@ -46,7 +46,7 @@
                     </div>
                     <div class="form-group">
                         <label for="new">Sản phẩm mới:</label>
-                        <select class="form-control" name="new" id="">
+                        <select class="form-control @error('new') is-invalid @enderror" name="new" id="">
                             <option value="{{$product->new}}">{{$product->new}}</option>
                             <option value="1">1 ( sản phẩm mới )</option>
                             <option value="0">0 ( sản phẩm cũ )</option>
@@ -59,7 +59,7 @@
                     @enderror
                     </div>
                     <div class="form-group">
-                        <img id="car-image-preview" width="150px" height="100px" src="/source/image/product/{{$product->image}}" />
+                        <img id="product-image-preview" width="150px" height="100px" src="/source/image/product/{{$product->image}}" />
                     </div>
                     <div class="form-group">
                         <label for="image">Hình ảnh:</label>
@@ -89,8 +89,6 @@
             </div>
         </div>
 </div>
-@endsection
-
 <script>
     $(document).ready(function() {
         // Bắt sự kiện thay đổi của input file
@@ -100,7 +98,7 @@
                 let reader = new FileReader();
 
                 reader.onload = function(e) {
-                    $('#car-image-preview').attr('src', e.target.result);
+                    $('#product-image-preview').attr('src', e.target.result);
                 }
 
                 reader.readAsDataURL(input.files[0]);
@@ -108,3 +106,5 @@
         });
     });
 </script>
+@endsection
+

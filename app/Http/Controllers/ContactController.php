@@ -15,17 +15,17 @@ class ContactController extends Controller
     $contacts = Contact::orderBy('created_at', 'desc')->where('status','Not Viewed')->get();
     
    
-    return view('admin.list-contact-not-viewed', compact('contacts'));
+    return view('admin.contact.list-contact-not-viewed', compact('contacts'));
 }
 public function getContactViewed()
 {
     $contacts = Contact::orderBy('created_at', 'desc')->get()->where('status','Viewed');
-    return view('admin.list-contact-viewed', compact('contacts'));
+    return view('admin.contact.list-contact-viewed', compact('contacts'));
 }
 public function getContactReplied()
 {
     $contacts = Contact::orderBy('created_at', 'desc')->get()->where('status','Replied');
-    return view('admin.list-contact-replied', compact('contacts'));
+    return view('admin.contact.list-contact-replied', compact('contacts'));
 }
     public function showMessage($id)
     {
@@ -36,7 +36,7 @@ public function getContactReplied()
         $contact->save();
         }
         
-        return view('admin.show-contact', compact('contact'));
+        return view('admin.contact.show-contact', compact('contact'));
     }
     public function sendResponse(Request $request, $id)
 {
@@ -56,7 +56,7 @@ public function getContactReplied()
     Mail::to($contact->email)->send(new ContactResponse($request->response, $contact->name));
     Session::flash('success', 'Đã phản hồi thành công .');
     // Assuming you want to redirect back to the contact message page after sending the response
-    return view('admin.show-contact', compact('contact'));
+    return view('admin.contact.show-contact', compact('contact'));
 }
 public function __construct()
     {

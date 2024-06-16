@@ -152,6 +152,29 @@
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
+                        <li>
+                            <a href="#"><i class="fa fa-users fa-fw"></i> Order<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="{{ route('admin.bills.status',['status'=>'New']) }}">List Bill</a>
+                                </li>
+                               
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="{{ route('slides.index') }}">
+                                <i class="fa fa-users fa-fw"></i> Slide<span class="fa arrow"></span>
+                                
+                            </a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="{{route('slides.create')}}">Add User</a>
+                                </li>
+                                <!-- /.nav-second-level -->
+                            </ul>
+                        </li>
+                        
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
