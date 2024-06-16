@@ -1,7 +1,5 @@
 @extends('page.account.layout')
-@section('content2')
-            
-                
+@section('content2')                  
                 <div class="col-md-9">
                     <div class="woocommerce-MyAccount-content">
                         <div class="woocommerce-notices-wrapper"></div>
@@ -87,12 +85,5 @@
                             </div>
                         </form>
                     </div>
-                </div>
-                
-            
-            
-            
-            
-            
-                
+                </div>              
  @endsection
