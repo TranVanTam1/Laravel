@@ -37,7 +37,7 @@
                                 <td class="align-middle text-center">{{ $loop->iteration }}</td>
                                 <td class="align-middle text-center">{{ $product->id }}</td>
                                 <td class="align-middle text-center">{{ $product->name }}</td>
-                                <td class="align-middle text-center"><img style="width: 100px;height: 70px;" src="/source/image/product/{{$product->image}}"></td>
+                                <td class="align-middle text-center"><img style="width: 100px;height: 70px;" src="/images/product/{{$product->image}}"></td>
                                 <td class="align-middle">{{ \Illuminate\Support\Str::limit($product->description, 10, '...') }}</td>
                                 <td style="min-width: 100px " class="align-middle text-center">{{ $product->unit_price }}</td>
                                 <td style="min-width: 100px " class="align-middle text-center">{{ $product->promotion_price }}</td>

@@ -28,16 +28,6 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group">
-                        <img id="product-image-preview" width="150px" height="100px" src="/source/image/product/{{$cartegory->image}}" />
-                    </div>
-                    <div class="form-group">
-                        <label for="image">Hình ảnh:</label>
-                        <input type="file" class="form-control @error('image') is-invalid @enderror" value="{{isset($cartegory)? $cartegory->name :''}}" id="image" name="image">
-                        @error('image')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
                     <button type="submit" class="btn btn-default">Save Changes</button>
                     <a href="{{ route('admin.getCateList') }}" class="btn btn-primary">Quay lại danh sách</a>
                 </form>

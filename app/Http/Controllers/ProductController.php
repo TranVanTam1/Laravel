@@ -70,7 +70,7 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $name = time() . '_' . $file->getClientOriginalName();
-            $destinationPath = public_path('/source/image/product');
+            $destinationPath = public_path('/images/product');
             $file->move($destinationPath, $name);
         } else {
             // Nếu không có tệp được tải lên, có thể xử lý theo ý của bạn, ví dụ:
@@ -135,7 +135,7 @@ class ProductController extends Controller
         {
             $file = $request->file('image');
             $name=time().'_'.$file->getClientOriginalName();
-            $destinationPath=public_path('images/produsts'); //project\public\images, //public_path(): trả về đường dẫn tới thư mục public
+            $destinationPath=public_path('/images/product'); //project\public\images, //public_path(): trả về đường dẫn tới thư mục public
             $file->move($destinationPath, $name); //lưu hình ảnh vào thư mục public/images/
         }
      
@@ -174,7 +174,7 @@ class ProductController extends Controller
     // Lấy đường dẫn tới file ảnh
    
     // Kiểm tra xem file ảnh có tồn tại không
-    $linkImage=public_path('images/products').$product->image;
+    $linkImage=public_path('images/product').$product->image;
         if(File::exists($linkImage)){
             File::delete($linkImage);
         }

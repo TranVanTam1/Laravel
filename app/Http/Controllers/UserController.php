@@ -168,4 +168,6 @@ class UserController extends Controller
     return redirect()->route('admin.getUserList')->with('success', 'Người dùng đã được xóa thành công.');
 
     }
+
+    
 }

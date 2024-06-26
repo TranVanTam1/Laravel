@@ -19,7 +19,7 @@ class AdminLoginMiddleware
         //dd("phải cần có quyền truy cập admin hoặc kỹ thuật viên");
         if(Auth::check()){
             $user=Auth::user();
-            if($user->level==1 || $user->level==2){
+            if($user->level==1 || $user->level==2 ){
                 return $next($request);
             }
             else {

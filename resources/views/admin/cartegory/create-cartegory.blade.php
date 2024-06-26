@@ -27,13 +27,7 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group">
-                        <label for="image">Hình ảnh:</label>
-                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
-                        @error('image')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
-                    </div>
+                   
                     <button type="submit" class="btn btn-default">Category Add</button>
                     <button type="reset" class="btn btn-default">Reset</button>
                 <form>

@@ -9,7 +9,8 @@
             <div class="mb-3">
                 <ul class="nav nav-pills">
                     <li class="nav-item">
-                        <a class="nav-link {{ Request::get('status') == 'New' ? 'active' : '' }}" href="{{ route('admin.bills.status',['status'=>'New']) }}">Mới</a>
+                        <a class="nav-link {{ Request::get('status') == 'New' ? 'active' : '' }}" href="{{ route('admin.bills.status',['status'=>'New']) }}">Mới </a>
+                        
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ Request::get('status') == 'In progress' ? 'active' : '' }}" href="{{ route('admin.bills.status', ['status' => 'In progress']) }}">Đang giao</a>
@@ -20,6 +21,11 @@
                     <li class="nav-item">
                         <a class="nav-link {{ Request::get('status') == 'Cancelled' ? 'active' : '' }}" href="{{ route('admin.bills.status', ['status' => 'Cancelled']) }}">Đã hủy</a>
                     </li>
+                    <li class="nav-item">
+
+                        <a class="nav-link {{ Request::get('status') == 'Request' ? 'active' : '' }}" href="{{ route('admin.bills.status',['status'=>'Request']) }}">Yêu cầu hủy</a>
+                    </li>
+  
                 </ul>
             </div>
             <br>
@@ -44,6 +50,7 @@
                         <th class="text-center">Hình thức thanh toán</th>
                         <th class="text-center">Trạng thái</th>
                         <th class="text-center">Ghi chú</th>
+                        <th class="text-center">Chỉnh sửa</th>
                         <th class="text-center">Xem chi tiết</th>
                         <th class="text-center">Chuyển trạng thái</th>
                         <th class="text-center">Hủy đơn</th>
@@ -69,6 +76,8 @@
                                         {{ $bill->note }}
                                     @endif
                                 </td>
+                                <td class="align-middle text-center"><a href="{{ route('admin.edit', ['id' => $bill->id]) }}"><button class="btn btn-sm btn-info">Chỉnh sửa</button></a></td>
+
                                 <td class="align-middle text-center"><a href="{{ route('admin.getBillDetail', ['id' => $bill->id]) }}"><button class="btn btn-sm btn-info">Chi tiết</button></a></td>
                                 <td class="align-middle text-center">
                                     @if ($bill->status == 'New') {{-- Kiểm tra nếu đơn hàng chưa hoàn thành thì mới hiển thị nút --}}

@@ -17,14 +17,12 @@
 
 <div class="container">
     <div id="content">
+               
+        
         <form action="{{ route('postsignin') }}" method="post" class="beta-form-checkout">
             @csrf
                             <div class="row">
                                 <div class="col-sm-3"></div>
-                                
-                                @if(Session::has('success'))
-                                    <div class="alert alert-success">{{ Session::get('success') }} </div>
-                                @endif
                 <div class="col-sm-6">
                     <h4>Đăng kí</h4>
                     <div class="space20">&nbsp;</div>

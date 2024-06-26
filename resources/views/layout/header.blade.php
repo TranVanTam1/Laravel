@@ -11,14 +11,17 @@
             </div>
             <div class="pull-right auto-width-right">
                 <ul class="top-details menu-beta l-inline">
-                    <li><a href="{{route('getPersonalInformation')}}"><i class="fa fa-user"></i>Tài khoản</a></li>
+                    @if (auth()->check())
+                        <li><a href="{{ route('getPersonalInformation') }}"><i class="fa fa-user"></i>Tài khoản</a></li>
+                    @endif
+                
                     @if(Auth::check())
-                    <li><a href="#"><i class="fa fa-user"></i>Chào bạn {{ Auth::user()->full_name }}</a></li>
-                    <li><a href="{{ route('getlogout') }} "><i class="fa fa-user"></i>Đăng xuất</a></li>
-                        @else
+                        <li><a href="#"><i class="fa fa-user"></i>Chào bạn {{ Auth::user()->full_name }}</a></li>
+                        <li><a href="{{ route('getlogout') }} "><i class="fa fa-user"></i>Đăng xuất</a></li>
+                    @else
                         <li><a href="{{ route('getsignin') }}">Đăng kí</a></li>
                         <li><a href="{{ route('getlogin') }}">Đăng nhập</a></li>
-                @endif
+                    @endif
                 </ul>
             </div>
 
@@ -33,10 +36,13 @@
             <div class="pull-right beta-components space-left ov">
                 <div class="space10">&nbsp;</div>
                 <div class="beta-comp">
-                    <form role="search" method="get" id="searchform" action="/">
-                        <input type="text" value="" name="s" id="s" placeholder="Nhập từ khóa..." />
-                        <button class="fa fa-search" type="submit" id="searchsubmit"></button>
+                    <form role="search" method="get" id="searchform" action="{{ route('search.products') }}">
+                        <input type="text"  name="q" id="q" placeholder="Nhập từ khóa..." />
+                        <button type="submit" id="searchsubmit">
+                            <i class="fa fa-search"></i>
+                        </button>
                     </form>
+                    
                 </div>
 
                 <div class="beta-comp">
@@ -77,7 +83,7 @@
 
                                     <div class="center">
                                         <div class="space10">&nbsp;</div>
-                                        <a href="/cart" class="beta-btn primary text-center">Giỏ hàng <i class="fa fa-chevron-right"></i></a>
+                                        <a href="{{route('page.shopping_cart')}}" class="beta-btn primary text-center">Giỏ hàng <i class="fa fa-chevron-right"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -98,14 +104,16 @@
                     <li><a href="/">Trang chủ</a></li>
                     <li><a href="#">Sản phẩm</a>
                         <ul class="sub-menu">
-                            @isset($producttypes)
-                                @foreach ($producttypes as $producttype)
-                                    <li><a href="{{ route('getProductType', ['product_type' => $producttype->id]) }}">{{ $producttype->name }}</a></li>
+                            @isset($cartegorys)
+                                @foreach ($cartegorys as $cartegory)
+                                    <li><a href="{{ route('getTypeCartegory', ['cartegory' => $cartegory->id]) }}">{{ $cartegory->name }}</a></li>
                                 @endforeach
                             @endisset
                         </ul>
                     </li>
                     <li><a href="about.html">Giới thiệu</a></li>
+                    <li><a href="{{route('getFavorites')}}">Yêu thích</a></li>
+
                     <li><a href="{{ route('getContact') }}">Liên hệ</a></li>
                 </ul>
                 <div class="clearfix"></div>
@@ -113,3 +121,14 @@
         </div> <!-- .container -->
     </div> <!-- .header-bottom -->
 </div> <!-- #header -->
+@if (session('success'))
+<div style="text-align: center" class="alert alert-success">
+    {{ session('success') }}
+</div>
+@endif
+@if (session('message'))
+<div style="text-align: center" class="alert alert-danger">
+    {{ session('message') }}
+</div>
+@endif
+ 

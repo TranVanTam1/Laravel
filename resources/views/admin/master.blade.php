@@ -43,7 +43,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Admin Area - Khoa Phạm</a>
+                <a class="navbar-brand" href="index.html">Admin MM MEGA VIET NAM </a>
             </div>
             <!-- /.navbar-header -->
 
@@ -86,66 +86,78 @@
                             <a href="/admin/cartegory/danhsach"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Category<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Danh mục<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="/admin/cartegory/danhsach">List Category</a>
+                                    <a href="/admin/cartegory/danhsach">Danh sách danh mục</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.getCateAdd') }}">Add Category</a>
+                                    <a href="{{ route('admin.getCateAdd') }}">Thêm mới danh mục</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-cube fa-fw"></i> Product<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i>Loại sản phẩm<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="/admin/product/danhsach">List Product</a>
+                                    <a href="/admin/type-product/danhsach">Danh sách loại SP</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.getProductAdd') }}">Add Product</a>
+                                    <a href="{{ route('admin.getTypeAdd') }}">Thêm mới loại SP</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-cube fa-fw"></i>Sản phẩm<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="/admin/product/danhsach">Danh sách sản phẩm</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.getProductAdd') }}">Thêm mới sản phẩm</a>
                                     {{-- {{ route('products.create') }} --}}
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-users fa-fw"></i> User<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-users fa-fw"></i> Khách hàng<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="{{route('admin.getUserList')}}">List User</a>
+                                    <a href="{{route('admin.getUserList')}}">Danh sách khách hàng</a>
                                 </li>
                                 <li>
-                                    <a href="{{route('admin.getUserAdd')}}">Add User</a>
+                                    <a href="{{route('admin.getUserAdd')}}">Thêm mới khách hàng</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
                             <a href="#">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Contacts @if($notViewedCount > 0)
+                                <i class="fa fa-bar-chart-o fa-fw"></i> Liên hệ @if($notViewedCount > 0)
                                 <span class="badge">{{ $notViewedCount +$viewedCount }}</span>
                             @endif<span class="fa arrow"></span>
                                 
                               </a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="{{ route('admin.getContactNotViewed') }}">Not Viewed 
+                                    <a href="{{ route('admin.getContactNotViewed') }}">Chưa xem 
                                         @if($notViewedCount > 0)
                                             <span class="badge">{{ $notViewedCount }}</span>
                                         @endif
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.getContactViewed') }}">Viewed 
+                                    <a href="{{ route('admin.getContactViewed') }}">Đã xem
                                         @if($viewedCount > 0)
                                             <span class="badge">{{ $viewedCount }}</span>
                                         @endif
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.getContactReplied')}}">Replied 
+                                    <a href="{{ route('admin.getContactReplied')}}">Đã trả lời
                                        
                                     </a>
                                 </li>
@@ -153,23 +165,44 @@
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-users fa-fw"></i> Order<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="{{ route('admin.bills.status',['status'=>'New']) }}">List Bill</a>
-                                </li>
-                               
-                            </ul>
-                            <!-- /.nav-second-level -->
+                            <a href="{{ route('admin.bills.status',['status'=>'New']) }}">
+                                <i class="fa fa-users fa-fw"></i> Đơn hàng 
+                                @if($New > 0)
+                                    <span class="badge">{{ $New }}</span>
+                                @endif
+                                <span class="fa arrow"></span>
+                            </a>
                         </li>
+                        
+                        
                         <li>
-                            <a href="{{ route('slides.index') }}">
+                            <a href="}">
                                 <i class="fa fa-users fa-fw"></i> Slide<span class="fa arrow"></span>
                                 
                             </a>
                             <ul class="nav nav-second-level">
+                                
                                 <li>
-                                    <a href="{{route('slides.create')}}">Add User</a>
+                                    <a href="{{ route('slides.index') }}">Danh sách</a>
+                                </li>
+                                <li>
+                                    <a href="{{route('slides.create')}}">Thêm slide</a>
+                                </li>
+                                <!-- /.nav-second-level -->
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="}">
+                                <i class="fa fa-users fa-fw"></i> Coupon<span class="fa arrow"></span>
+                                
+                            </a>
+                            <ul class="nav nav-second-level">
+                                
+                                <li>
+                                    <a href="{{ route('admin.coupons') }}">Danh sách Coupon</a>
+                                </li>
+                                <li>
+                                    <a href="{{route('admin.coupons.create')}}">Thêm Coupon</a>
                                 </li>
                                 <!-- /.nav-second-level -->
                             </ul>

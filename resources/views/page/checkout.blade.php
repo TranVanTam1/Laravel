@@ -5,23 +5,17 @@
            
             <form action="{{ route('page.postdathang') }}" method="post" class="beta-form-checkout">
                     @csrf
-                <div class="row">
-                    <!-- session('success') sinh ra từ hàm postDatHang trong PageController -->
-                    @if (session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    
-                </div>
+                
                 <div class="row">
                     <div class="col-sm-6">
                         <h4>Đặt hàng</h4>
                         <div class="space20">&nbsp;</div>
-
+                        
                         <div class="form-block">
                             <label for="name">Họ tên*</label>
-                            <input type="text" id="name" placeholder="Họ tên" name="name" required>
+                            <input type="text" id="name" placeholder="Họ tên" value="@isset($user)
+                                {{ $user->full_name }}
+                            @endisset" name="name" required>
                         </div>
                         <div class="form-block">
                             <label>Giới tính </label>
@@ -32,24 +26,27 @@
 
                         <div class="form-block">
                             <label for="email">Email*</label>
-                            <input type="email" id="email" required placeholder="expample@gmail.com" name="email">
+                            <input type="email" id="email"  value="@isset($user)
+                                {{ $user->email }}
+                            @endisset" required placeholder="expample@gmail.com" name="email">
                         </div>
 
                         <div class="form-block">
                             <label for="adress">Địa chỉ*</label>
-                            <input type="text" id="adress" placeholder="Street Address" name="address" required>
+                            <input type="text" id="adress" value="@isset($user){{ $user->address }}@endisset" placeholder="Street Address" name="address" required>
                         </div>
                        
 
                         <div class="form-block">
                             <label for="phone">Điện thoại*</label>
-                            <input type="text" id="phone" name="phone_number" required>
+                            <input type="text" value="@isset($user){{ $user->phone }}@endisset" id="phone" name="phone_number" required>
                         </div>
                        
                         <div class="form-block">
                             <label for="notes">Ghi chú</label>
                             <textarea id="notes" name="notes"></textarea>
                         </div>
+                        
                     </div>
                     <div class="col-sm-6">
                         <div class="your-order">
@@ -61,7 +58,7 @@
                                             @foreach($productCarts as $product)
                                             <!-- one item -->
                                         <div class="media">
-                                            <img width="25%" height="70px" src="/source/image/product/{{ $product['item']['image'] }}" alt="" class="pull-left">
+                                            <img width="25%" height="70px" src="/images/product/{{ $product['item']['image'] }}" alt="" class="pull-left">
                                             <div class="media-body">
                                                     <p class="font-large">{{ $product['item']['name'] }}</p>
                                                     <span class="cart-item-amount">{{ $product['qty'] }}*<span>
@@ -82,14 +79,13 @@
                                 </div>
                                 <!-- end one item -->
                                 @endforeach
-                               
-                                   
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </div>
+
                                 <div class="your-order-item">
-                                    <div class="pull-left"><p class="your-order-f18">Tổng tiền:</p></div>
-                                    <div class="pull-right"><h5 class="color-black">{{ number_format($cart->totalPrice) }} đồng</h5></div>
+                                    <div class="pull-left"><p class="your-order-f18">Tổng tiền :</p></div>
+                                    <div class="pull-right"><h5 class="color-black">
+                                      
+                                        {{ number_format($total) }} 
+                                        đồng</h5></div>
                                     <div class="clearfix"></div>
                                 </div>
                                 @endif

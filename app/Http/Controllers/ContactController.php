@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Contact;
+use App\Models\Bill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactResponse;
@@ -58,15 +59,6 @@ public function getContactReplied()
     // Assuming you want to redirect back to the contact message page after sending the response
     return view('admin.contact.show-contact', compact('contact'));
 }
-public function __construct()
-    {
-        $notViewedCount = Contact::where('status', 'Not Viewed')->count();
-        $viewedCount = Contact::where('status', 'Viewed')->count();
-        $repliedCount = Contact::where('status', 'Replied')->count();
 
-        View::share('notViewedCount', $notViewedCount);
-        View::share('viewedCount', $viewedCount);
-        View::share('repliedCount', $repliedCount);
-    }
 
 }

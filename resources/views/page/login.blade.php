@@ -19,17 +19,7 @@
         
         <form action="{{ route('postlogin') }}" method="post" class="beta-form-checkout">
             @csrf
-            
-            @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-            @endif
-            @if (session('message'))
-            <div class="alert alert-danger">
-                {{ session('message') }}
-            </div>
-            @endif
+          
             <div class="row">
                 <div class="col-sm-3"></div>
                 <div class="col-sm-6">

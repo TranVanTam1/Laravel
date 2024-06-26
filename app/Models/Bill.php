@@ -17,4 +17,8 @@ class Bill extends Model
     {
         return $this->belongsTo(Customer::class, 'id_customer', 'id');
     }
+    public function billDetails()
+    {
+        return $this->hasMany(BillDetail::class, 'id_bill', 'id'); // Replace with actual relationship method and model
+    }
 }

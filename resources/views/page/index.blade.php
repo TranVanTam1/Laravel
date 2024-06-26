@@ -40,7 +40,7 @@
 				<div class="row">
 					<div class="col-sm-12">
 						<div class="beta-products-list">
-							<h4>New Products</h4>
+							<h4>Sản phẩm mới </h4>
 							<div class="beta-products-details">
 								<p class="pull-left">{{count($new_products)}} styles found</p>
 								<div class="clearfix"></div>
@@ -56,7 +56,7 @@
                                         <div class="ribbon-wrapper"><div class="ribbon sale">Sale</div></div>
                                         @endif
                                         <div class="single-item-header">
-                                            <a href="product.html"><img src="../source/image/product/{{$new_product->image}}" alt="" height="250px"></a>
+                                            <a href="product.html"><img src="/images/product/{{$new_product->image}}" alt="" height="250px"></a>
                                         </div>
                                         <div class="single-item-body">
                                             <p class="single-item-title">{{$new_product->name}}</p>
@@ -66,12 +66,21 @@
                                                 @else
                                                 <span class="flash-del">{{ number_format($new_product->unit_price) }} đồng</span>
                                                 <span class="flash-sale">{{ number_format($new_product->promotion_price) }} đồng</span>
+                                              
                                                 @endif
-                                            </p>
+                                                
+                                            
                                         </div>
+                                      
                                         <div class="single-item-caption">
+                                            @if(Auth::check())
+                                                <a href="{{route('product.favorite',$new_product->id)}}" class="add-to-favorites pull-left">
+                                                    <i class="fa fa-heart"></i> Yêu thích
+                                                </a> <br><br>
+                                            @endif
 											<a class="add-to-cart pull-left" href="{{ route('page.addtocart',$new_product->id) }}"><i class="fa fa-shopping-cart"></i></a>
                                             <a class="beta-btn primary" href="{{route('page.product',['id'=>$new_product->id] ) }}">Chi tiết <i class="fa fa-chevron-right"></i></a>
+                                            
                                             <div class="clearfix"></div>
                                         </div>
                                     </div>
@@ -89,7 +98,7 @@
 						<div class="space50">&nbsp;</div>
 
 						<div class="beta-products-list">
-							<h4>Top Products</h4>
+							<h4>Sản phẩm giá tót</h4>
 							<div class="beta-products-details">
 								<p class="pull-left">{{count($products)}} styles found</p>
 								<div class="clearfix"></div>
@@ -104,7 +113,7 @@
                                         <div class="ribbon-wrapper"><div class="ribbon sale">Sale</div></div>
                                         @endif
                                         <div class="single-item-header">
-                                            <a href="product.html"><img src="../source/image/product/{{$product->image}}" alt="" height="250px"></a>
+                                            <a href="product.html"><img src="/images/product/{{$product->image}}" alt="" height="250px"></a>
                                         </div>
                                         <div class="single-item-body">
                                             <p class="single-item-title">{{$product->name}}</p>
@@ -118,6 +127,11 @@
                                             </p>
                                         </div>
                                         <div class="single-item-caption">
+                                            @if(Auth::check())
+                                            <a href="{{route('product.favorite',$product->id)}}" class="add-to-favorites pull-left">
+                                                <i class="fa fa-heart"></i> Yêu thích
+                                            </a> <br><br>
+                                        @endif
 											<a class="add-to-cart pull-left" href="{{ route('page.addtocart',$product->id) }}"><i class="fa fa-shopping-cart"></i></a>
                                             <a class="beta-btn primary" href="{{route('page.product',['id'=>$product->id] ) }}">Chi tiết <i class="fa fa-chevron-right"></i></a>
                                             <div class="clearfix"></div>

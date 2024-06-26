@@ -19,7 +19,7 @@
                         <th class="text-center">Số lượng</th>
                         <th class="text-center">Đơn giá</th>
                         <th class="text-center">Thành tiền</th>
-                       
+                        <th class="text-center">Chỉnh sửa</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,7 +32,9 @@
                                 <td class="align-middle text-center">{{ $billDetail->quantity }}</td>
                                 <td class="align-middle text-center">{{ $billDetail->unit_price }}</td>
                                 <td class="align-middle text-center">{{ $billDetail->quantity * $billDetail->unit_price }}</td>
-                              
+                                <td class="align-middle text-center">
+                                    <a href="{{ route('admin.editBillDetail', ['id' => $billDetail->id]) }}" class="btn btn-sm btn-info">Chỉnh sửa</a>
+                                </td>
                             </tr>
                         @endforeach
                     @endisset

@@ -1,16 +1,20 @@
 <?php
-
 namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Bill;
 use App\Models\Customer;
+use App\Models\Favorite;
+use App\Models\Type;
+use App\Mail\OrderPlaced;
 use App\Models\Slide;
 use App\Models\BillDetail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Coupon;
+use Carbon\Carbon;
 use App\Models\Contact;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
@@ -34,15 +38,15 @@ class PageController extends Controller
         return view('page.product', compact('product'));
     }
     //thêm 1 sản phẩm có id cụ thể vào model cart rồi lưu dữ liệu của model cart vào 1 session có tên cart (session được truy cập bằng thực thể Request)
-   public function addToCart(Request $request,$id)
-   {
+    public function addToCart(Request $request,$id){
         $product=Product::find($id);
         $oldCart=Session('cart')?Session::get('cart'):null;
         $cart=new Cart($oldCart);
         $cart->add($product,$id);
         $request->session()->put('cart',$cart);
         return redirect()->back();
-    }
+     }
+    
     public function delCartItem($id){
         $oldCart=Session::has('cart')?Session::get('cart'):null;
         $cart=new Cart($oldCart);
@@ -52,85 +56,216 @@ class PageController extends Controller
         }else Session::forget('cart');
         return redirect()->back();
     }
-    public function getCheckout(){
-        return view('page.checkout');
+    public function getCheckout($total){
+
+        return view('page.checkout',compact('total'));
     }
 
-    public function postCheckout(Request $request){
+    public function postCheckout(Request $request)
+{
+    $cart = Session::get('cart');
     
-        $cart=Session::get('cart');
-        $customer=new Customer();
-        $customer->name=$request->input('name');
-        $customer->gender=$request->input('gender');
-        $customer->email=$request->input('email');
-        $customer->address=$request->input('address');
-        $customer->phone_number=$request->input('phone_number');
-        $customer->note=$request->input('notes');
-        
-        $customer->save();
+    // Lấy thông tin người dùng đang đăng nhập
+    $user = Auth::user();
+// Kiểm tra sự tồn tại của khách hàng dựa trên email
+$existingCustomer = Customer::where('email', $request->input('email'))->first();
 
-        $bill=new Bill();
-        $bill->id_customer=$customer->id;
-        $bill->date_order=date('Y-m-d');
-        $bill->total=$cart->totalPrice;
-        $bill->payment=$request->input('payment_method');
-        $bill->note=$request->input('notes');
-        $bill->status ="New";
-        $bill->save();
+if ($existingCustomer) {
+    // Khách hàng đã tồn tại, không cần lưu thông tin mới
+    $customer = $existingCustomer;
+} else {
+    // Khách hàng chưa tồn tại, tạo mới đối tượng Customer và lưu thông tin
+    $customer = new Customer();
+    $customer->name = $request->input('name');
+    $customer->gender = $request->input('gender');
+    $customer->email = $request->input('email');
+    $customer->address = $request->input('address');
+    $customer->phone_number = $request->input('phone_number');
+    $customer->note = $request->input('notes');
+    $customer->save();
+}
 
-        foreach($cart->items as $key=>$value)
-        {
-            $bill_detail=new BillDetail();
-            $bill_detail->id_bill=$bill->id;
-            $bill_detail->id_product=$key;
-            $bill_detail->quantity=$value['qty'];
-            $bill_detail->unit_price=$value['price']/$value['qty'];
-            $bill_detail->save();
+// Tạo một đối tượng Bill và lưu thông tin đơn hàng
+$bill = new Bill();
+$bill->id_customer = $customer->id; // Sử dụng id của khách hàng (có thể là $existingCustomer->id hoặc $customer->id tùy vào trường hợp)
+$bill->date_order = date('Y-m-d');
+$bill->total = $cart->totalPrice;
+$bill->payment = $request->input('payment_method');
+$bill->note = $request->input('notes');
+$bill->status = "New";
+$bill->save();
+    // Lưu chi tiết đơn hàng vào bảng BillDetail
+    foreach ($cart->items as $key => $value) {
+        $bill_detail = new BillDetail();
+        $bill_detail->id_bill = $bill->id;
+        $bill_detail->id_product = $key;
+        $bill_detail->quantity = $value['qty'];
+        $bill_detail->unit_price = $value['price'] / $value['qty'];
+        $bill_detail->save();
+    }
+
+    // Xóa giỏ hàng sau khi đã đặt hàng thành công
+    Session::forget('cart');
+    // Gửi email thông báo cho người dùng
+Mail::to($customer->email)->send(new OrderPlaced($bill));
+    // Chuyển hướng về lại trang trước đó và gửi thông báo thành công
+    return redirect()->back()->with('success', 'Đặt hàng thành công');
+}
+
+public function updateCart(Request $request)
+{
+    // Xử lý cập nhật số lượng sản phẩm trong giỏ hàng
+
+    // Ví dụ: Lấy thông tin sản phẩm từ request
+    $productId = $request->input('product_id');
+    $newQuantity = $request->input('quantity');
+
+    // Cập nhật số lượng trong giỏ hàng (ví dụ)
+    // Lưu ý: Đây là logic giả, bạn cần thay thế bằng logic xử lý thực tế của bạn
+    $product = Product::find($productId);
+    if (!$product) {
+        return response()->json(['error' => 'Product not found'], 404);
+    }
+
+    // Cập nhật số lượng trong session hoặc database
+    // Ví dụ: Sử dụng session để lưu giỏ hàng
+    $cart = session()->get('cart');
+
+    // Tìm sản phẩm trong giỏ hàng
+    foreach ($cart as $key => $item) {
+        if ($item['item']['id'] == $productId) {
+            // Cập nhật số lượng
+            $cart[$key]['qty'] = $newQuantity;
         }
-        Session::forget('cart');
-        return redirect()->back()->with('success','Đặt hàng thành công');
-
-    }
-    public function capnhatgiohang(Request $request)
-    {
-        try {
-            $productId = $request->input('id');
-            $quantity = $request->input('quantity');
-    
-            $cart = session()->has('cart') ? session()->get('cart') : [];
-    
-            if (array_key_exists($productId, $cart)) {
-                $cart[$productId]['qty'] = $quantity;
-                session()->put('cart', $cart);
-    
-                $product = Product::find($productId);
-    
-                if ($product) {
-                    $unitPrice = $product->promotion_price == 0 ? $product->unit_price : $product->promotion_price;
-                    return response()->json([
-                        'unitPrice' => $unitPrice,
-                    ]);
-                } else {
-                    return response()->json(['error' => 'Product not found.'], 404);
-                }
-            } else {
-                return response()->json(['error' => 'Product not found in cart.'], 404);
-            }
-        } catch (\Exception $e) {
-            Log::error('Error updating cart: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while updating cart.'], 500);
-        }
     }
 
-    public function getProductsByType($product_type) {
-        // Retrieve products based on $product_type
-        $new_products = Product::where('id_type', $product_type)->where('new', 1)->get();
-        $products = Product::where('id_type', $product_type)->where('new', 0)->paginate(9)->onEachSide(5);
-        
-        // Pass $products to your view and render it
-        return view('page.product_type', compact('new_products','products'));
+    session()->put('cart', $cart);
+
+    // Tính lại tổng tiền
+    $totalAmount = 0;
+    foreach ($cart as $item) {
+        $subtotal = $item['item']['promotion_price'] == 0 ? $item['item']['unit_price'] * $item['qty'] : $item['item']['promotion_price'] * $item['qty'];
+        $totalAmount += $subtotal;
+    }
+
+    // Kiểm tra điều kiện để đặt phí vận chuyển
+    $shippingFee = $totalAmount > 500000 ? 0 : 30000;
+
+    // Chuẩn bị dữ liệu trả về dưới dạng JSON
+    $response = [
+        'subtotal' => $totalAmount,
+        'shippingFee' => $shippingFee,
+        // Các thông tin khác cần thiết khác có thể điền vào đây
+    ];
+
+    return response()->json($response);
+}
+public function updateQuantity(Request $request, $productId)
+{
+    $cart = session()->get('cart'); // Fetch cart from session (adjust as per your implementation)
+
+    $productId = $request->product_id;
+    $newQuantity = $request->quantity;
+
+    $productId = $request->product_id;
+        $newQuantity = $request->quantity;
+
+        $oldCart = session()->has('cart') ? session()->get('cart') : null;
+        $cart = new Cart($oldCart);
+        $cart->updateQuantity($productId, $newQuantity);
+
+        session()->put('cart', $cart);
+
+      
+
+    // Redirect back to cart or do whatever is needed
+    return redirect()->back();
+}
+public function shopping_cart()
+{
+    // Retrieve cart from session
+    $oldCart = session()->has('cart') ? session()->get('cart') : null;
+    $cart = new Cart($oldCart);
+
+    // Calculate subtotal
+    $subtotal = $cart->subtotal();
+    $total = $cart->total(); // Lấy giá trị subtotal từ session hoặc nơi lưu trữ
+    
+    // Pass data to the view
+    return view('page.shopping_cart', [
+        'cart' => $cart,
+        'subtotal' => $subtotal,
+        'total' => $total,
+    ]);
+}
+public function apply(Request $request)
+{
+    $couponCode = $request->input('coupon_code');
+    $oldCart = session()->has('cart') ? session()->get('cart') : null;
+    $cart = new Cart($oldCart);
+    // Tìm mã giảm giá trong CSDL
+    $coupon = Coupon::where('code', $couponCode)->first();
+    $discountTotal=0;
+    $discountPercent=0;
+    if (!$coupon) {
+        // Xử lý khi không tìm thấy mã giảm giá
+        return redirect()->back()->with('message', 'Invalid coupon code. Please try again.');
     }
     
+    // Lấy giá trị discount_percent từ mã giảm giá
+    $discountPercent = $coupon->discount_percent;
+    
+    // Lấy $subtotal từ session hoặc bất kỳ nơi nào lưu trữ giá trị subtotal
+    $subtotal = $cart->subtotal(); // Lấy giá trị subtotal từ session hoặc nơi lưu trữ
+    $total = $cart->total(); // Lấy giá trị subtotal từ session hoặc nơi lưu trữ
+    
+    // Tính toán giá trị giảm giá
+    $discountTotal = ($subtotal * $discountPercent)/100 ;
+    $total = $subtotal-$discountTotal;
+    return view('page.shopping_cart', [
+        'cart' => $cart,
+        'subtotal' => $subtotal,
+        'discountTotal' => $discountTotal,
+        'total' => $total,
+    ])->with('success', 'Coupon applied successfully.');
+}
+
+public function getTypeByCartegory($cartegory)
+{
+    // Lấy các loại (Type) có cùng cartegory_id từ bảng type_products
+    $types = Type::where('cartegory_id', $cartegory)->get();
+
+    // Lấy các sản phẩm mới có cùng cartegory_id từ bảng products
+    $new_products = Product::whereHas('type', function ($query) use ($cartegory) {
+        $query->where('cartegory_id', $cartegory);
+    })->where('new', 1)->get();
+
+    // Lấy các sản phẩm không phải mới có cùng cartegory_id từ bảng products và phân trang
+    $products = Product::whereHas('type', function ($query) use ($cartegory) {
+        $query->where('cartegory_id', $cartegory);
+    })->where('new', 0)->paginate(9);
+
+    // Trả về view 'page.product_type' với dữ liệu sản phẩm và loại
+    return view('page.product_type', compact('new_products', 'products', 'types'));
+}
+
+public function showProductsByType($type)
+{
+    // Retrieve new products based on $type
+    $new_products = Product::where('id_type', $type)->where('new', 1)->get();
+    
+    // Retrieve other products (not new) based on $type and paginate
+    $products = Product::where('id_type', $type)->where('new', 0)->paginate(9)->onEachSide(5);
+    
+    // Retrieve types based on $type
+    $types = Type::where('cartegory_id', function ($query) use ($type) {
+        $query->select('cartegory_id')->from('type_products')->where('id', $type);
+    })->get();
+
+    return view('page.product_type', compact('new_products', 'products', 'types'));
+}
+
+
     public function getSignin(){
        
         return view('page.sign_up');
@@ -161,31 +296,51 @@ class PageController extends Controller
         $user->save();
         return redirect()->back()->with('success','Tạo tài khoản thành công');
     }
-    public function getLogin(){
+    public function getLoginUser(){
         return view('page.login');
     }
 
-public function postLogin(Request $req){
+    public function postLoginUser(Request $req){
         $this->validate($req,
-        [
-            'email'=>'required|email',
-            'password'=>'required|min:6|max:20'
-        ],
-        [
-            'email.required'=>'Vui lòng nhập email',
-            'email.email'=>'Không đúng định dạng email',
-            'password.required'=>'Vui lòng nhập mật khẩu',
-            'password.min'=>'Mật khẩu ít nhất 6 ký tự'
-        ]
+            [
+                'email' => 'required|email',
+                'password' => 'required|min:6|max:20'
+            ],
+            [
+                'email.required' => 'Vui lòng nhập email',
+                'email.email' => 'Không đúng định dạng email',
+                'password.required' => 'Vui lòng nhập mật khẩu',
+                'password.min' => 'Mật khẩu ít nhất 6 ký tự'
+            ]
         );
-        $credentials=['email'=>$req->email,'password'=>$req->password];
-        if(Auth::attempt($credentials)){//The attempt method will return true if authentication was successful. Otherwise, false will be returned.
-            return redirect('/')->with(['flag'=>'alert','message'=>'Đăng nhập thành công']);
-        }
-        else{
-            return redirect()->back()->with(['flag'=>'danger','message'=>'Đăng nhập không thành công']);
+    
+        $credentials = [
+            'email' => $req->email,
+            'password' => $req->password,
+        ];
+    
+        // Thử đăng nhập người dùng
+        if (Auth::attempt($credentials)) {
+            // Lấy thông tin người dùng đã đăng nhập
+            $user = Auth::user();
+            
+            // Kiểm tra nếu người dùng là admin
+            if ($user->isAdmin) {
+                // Đăng xuất người dùng admin để không tự động đăng nhập với người dùng bình thường
+                Auth::logout();
+                
+                // Điều hướng về trang trước đó với thông báo không được phép đăng nhập
+                return redirect()->back()->with(['flag' => 'danger', 'message' => 'Bạn không có quyền truy cập']);
+            }
+            
+            // Điều hướng về trang chủ và thông báo đăng nhập thành công cho người dùng bình thường
+            return redirect('/')->with(['flag' => 'alert', 'success' => 'Đăng nhập thành công']);
+        } else {
+            // Điều hướng về trang trước đó với thông báo đăng nhập không thành công
+            return redirect()->back()->with(['flag' => 'danger', 'message' => 'Đăng nhập không thành công']);
         }
     }
+    
     public function getLogout(Request $request){
         Auth::logout();
         $request->session()->invalidate();
@@ -266,7 +421,204 @@ public function getOrderManagement(){
     return view('page.account.order_management');
 }
 public function getPersonalInformation(){
-    return view('page.account.personal_information');
+      // Lấy thông tin của người dùng hiện tại đã đăng nhập
+      $user = auth()->user(); // Lấy thông tin người dùng đã đăng nhập
+
+      // Trả về view và truyền dữ liệu của người dùng
+      return view('page.account.personal_information', compact('user'));
+  }
+
+
+      // Method to update personal information including password
+public function postUpdatePersonalInformation(Request $request)
+    {
+        // Validate incoming request
+        $request->validate([
+            'account_last_name' => 'required|string',
+            'account_email' => 'required|email',
+            'account_phone_number' => 'required|string',
+            'address' => 'required|string',
+        ]);
+
+        try {
+            // Get authenticated user
+            $user = auth()->user();
+
+            // Update user information
+            $user->full_name = $request->input('account_last_name');
+            $user->email = $request->input('account_email');
+            $user->phone = $request->input('account_phone_number');
+            $user->address = $request->input('address');
+         
+
+            // Save user changes
+            $user->save();
+
+            // Redirect back or to a success page
+            return redirect()->back()->with('success', 'Thông tin cá nhân đã được cập nhật thành công.');
+        } catch (\Exception $e) {
+            Log::error('Error updating user: ' . $e->getMessage());
+            return redirect()->back()->with('message', 'Đã xảy ra lỗi khi cập nhật thông tin cá nhân.');
+        }
+    }
+    public function getChangePassword(){
+        return view('page.account.change_password');
+    }
+    public function postChangePassword(Request $request)
+    {
+        // Validate the input
+        $request->validate([
+            'password_current' => 'required',
+            'password_1' => 'required|string|min:6|different:password_current',
+            'password_2' => 'required|same:password_1',
+        ]);
+
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Check if the current password matches the authenticated user's password
+        if (!Hash::check($request->password_current, $user->password)) {
+            return redirect()->back()->with('message', 'Current password is incorrect.');
+        }
+
+        // Change the password
+        $user->password = Hash::make($request->password_1);
+        $user->save();
+
+        // Redirect with success message
+        return redirect()->back()->with('success', 'Password changed successfully.');
+    }
+    public function showOrders(Request $request, $status = null)
+    {
+        // Lấy thông tin người dùng đã đăng nhập
+        $user = Auth::user();
+        
+        // Bắt đầu câu truy vấn đơn hàng của người dùng đã đăng nhập
+        $ordersQuery = Bill::where('id_customer', $user->id);
+        
+        // Áp dụng điều kiện lọc theo trạng thái nếu được chỉ định
+        if ($status) {
+            $ordersQuery->where('status', $status);
+        }
+        
+        // Phân trang với số lượng mỗi trang là 10
+        $orders = $ordersQuery->paginate(10);
+        
+        // Đếm số lượng đơn hàng
+        $dem = $orders->total(); // Lấy tổng số lượng đơn hàng
+        
+        // Trả về view 'order_management' với dữ liệu đơn hàng và số lượng đơn hàng
+        return view('page.account.order_management', compact('orders', 'dem'));
+    }
+
+    public function showDetailOrder($id)
+    {
+        // Truy vấn các chi tiết hóa đơn có id_bill tương ứng với $id
+        $billDetails = BillDetail::where('id_bill', $id)->get();
+        
+        // Trả về view 'admin.order.bill-detail' với dữ liệu $billDetails
+        return view('page.account.order_detail', compact('billDetails'));
+    }
+public function addToFavorite($id)
+{
+    $user = Auth::user();
+    $product = Product::findOrFail($id);
+
+    // Kiểm tra xem sản phẩm đã được yêu thích chưa
+    $existingFavorite = Favorite::where('id_customer', $user->id)
+                                ->where('product_id', $id)
+                                ->first();
+
+    if (!$existingFavorite) {
+      
+        // Nếu chưa có, thêm vào danh sách yêu thích
+        $favorite = new Favorite();
+        $favorite->id_customer = $user->id;
+        $favorite->product_id = $id;
+        $favorite->save();
+        
+        return redirect()->back()->with('success', 'Đã thêm sản phẩm vào danh sách yêu thích!');
+    } else {
+        // Nếu đã có, có thể xử lý thông báo cho người dùng
+        return redirect()->back()->with('error', 'Sản phẩm đã có trong danh sách yêu thích của bạn!');
+    }
 }
+public function getFavorites()
+    {
+        
+        // Lấy danh sách các sản phẩm yêu thích của người dùng hiện tại
+        $favorites = Favorite::where('id_customer', auth()->id())->with('product')->get();
+
+        return view('page.favorites.favorite', compact('favorites'));
+    }
+    // Previous methods...
+
+    public function removeFavorite($id)
+    {
+        $favorite = Favorite::findOrFail($id);
+        
+        // Check if the authenticated user is the owner of this favorite
+        if ($favorite->id_customer != auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $favorite->delete();
+
+        return redirect()->route('getFavorites')->with('success', 'Đã bỏ sản phẩm yêu thích.');
+    }
+   
+   
+    public function cancel($id)
+    {
+        $order = Bill::findOrFail($id);
+
+        // Check if the order status is eligible for cancellation (e.g., 'New')
+        if ($order->status == 'New') {
+            // Update order status to 'Cancelled'
+            $order->status = 'Cancelled';
+            $order->save();
+
+            // Optionally, you may want to perform additional actions here, such as notifying the user via email, etc.
+
+            return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công.');
+        } else {
+            return redirect()->back()->with('error', 'Không thể hủy đơn hàng này.');
+        }
+
+    }
+
+    
+    public function requestCancel($id)
+    {
+        $order = Bill::findOrFail($id);
+
+        // Assuming you have a 'cancellation_requested' status or flag in your orders table
+        $order->status = 'Request';
+
+        $order->save();
+
+        // Optionally, you may notify the admin about the cancellation request.
+        // Example: send an email or notification to the admin.
+
+        return redirect()->back()->with('success', 'Yêu cầu hủy đơn hàng đã được gửi.');
+    }
+    public function cancelRequest($id)
+    {
+        $order = Bill::findOrFail($id);
+
+        // Update the cancellation_requested status or flag to false
+        $order->status = 'New';
+        $order->save();
+
+        return redirect()->back()->with('success', 'Yêu cầu hủy đơn hàng đã được rút lại.');
+    }
+    public function search(Request $request)
+    {
+        $query = $request->input('q'); // Lấy từ khóa tìm kiếm từ query string
+        $products = Product::where('name', 'like', '%' . $query . '%')->paginate(10); // Tìm kiếm sản phẩm theo tên
+    
+        return view('page.search_results', compact('products', 'query'));
+    }
+
 
 }

@@ -21,7 +21,7 @@
             </div>
         </div>
     </section>
-
+    
     <section id="main-container" class="container inner">
         <div class="row">
             <div class="col-md-3">
@@ -32,7 +32,11 @@
                         </div>
                         <div class="mm-hello">
                             <div class="mm-account-for">Tài khoản của</div>
-                            <div class="mm-account-name">vantamtran1233</div>
+                            <div class="mm-account-name">
+                                @if(Auth::check())
+                                    {{$user->full_name}}
+                                    
+                            @endif</div>
                         </div>
                     </div>
                     <ul class="mm-page-list">
@@ -42,12 +46,12 @@
                             </a>
                         </li>
                         <li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--edit-address">
-                            <a href="https://online.mmvietnam.com/tai-khoan-cua-toi/edit-address/">
-                                <img class="mm-account-menu-widget" src="https://online.mmvietnam.com/wp-content/themes/yozi-child/assets/icon/map.png">Quản lý địa chỉ
+                            <a href="{{route('getChangePassword')}}">
+                                <img class="mm-account-menu-widget" src="https://online.mmvietnam.com/wp-content/themes/yozi-child/assets/icon/map.png">Thay đổi mật khẩu
                             </a>
                         </li>
                         <li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--orders is-active">
-                            <a href="{{route('getOrderManagement')}}">
+                            <a href="{{ route('my.orders', ['status' => 'New']) }}">
                                 <img class="mm-account-menu-widget" src="https://online.mmvietnam.com/wp-content/themes/yozi-child/assets/icon/follow-order.png">Theo dõi Đơn hàng
                             </a>
                         </li>
