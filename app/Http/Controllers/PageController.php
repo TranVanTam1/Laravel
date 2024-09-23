@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Coupon;
+use Exception;
 use Carbon\Carbon;
 use App\Models\Contact;
 use Illuminate\Support\Facades\Mail;
@@ -62,56 +63,65 @@ class PageController extends Controller
     }
 
     public function postCheckout(Request $request)
-{
-    $cart = Session::get('cart');
+    {
+        $cart = Session::get('cart');
+        
+        // Lấy thông tin người dùng đang đăng nhập
+        $user = Auth::user();
     
-    // Lấy thông tin người dùng đang đăng nhập
-    $user = Auth::user();
-// Kiểm tra sự tồn tại của khách hàng dựa trên email
-$existingCustomer = Customer::where('email', $request->input('email'))->first();
-
-if ($existingCustomer) {
-    // Khách hàng đã tồn tại, không cần lưu thông tin mới
-    $customer = $existingCustomer;
-} else {
-    // Khách hàng chưa tồn tại, tạo mới đối tượng Customer và lưu thông tin
-    $customer = new Customer();
-    $customer->name = $request->input('name');
-    $customer->gender = $request->input('gender');
-    $customer->email = $request->input('email');
-    $customer->address = $request->input('address');
-    $customer->phone_number = $request->input('phone_number');
-    $customer->note = $request->input('notes');
-    $customer->save();
-}
-
-// Tạo một đối tượng Bill và lưu thông tin đơn hàng
-$bill = new Bill();
-$bill->id_customer = $customer->id; // Sử dụng id của khách hàng (có thể là $existingCustomer->id hoặc $customer->id tùy vào trường hợp)
-$bill->date_order = date('Y-m-d');
-$bill->total = $cart->totalPrice;
-$bill->payment = $request->input('payment_method');
-$bill->note = $request->input('notes');
-$bill->status = "New";
-$bill->save();
-    // Lưu chi tiết đơn hàng vào bảng BillDetail
-    foreach ($cart->items as $key => $value) {
-        $bill_detail = new BillDetail();
-        $bill_detail->id_bill = $bill->id;
-        $bill_detail->id_product = $key;
-        $bill_detail->quantity = $value['qty'];
-        $bill_detail->unit_price = $value['price'] / $value['qty'];
-        $bill_detail->save();
+        // Kiểm tra sự tồn tại của khách hàng dựa trên email
+        $existingCustomer = Customer::where('email', $request->input('email'))->first();
+    
+        if ($existingCustomer) {
+            // Khách hàng đã tồn tại, không cần lưu thông tin mới
+            $customer = $existingCustomer;
+        } else {
+            // Khách hàng chưa tồn tại, tạo mới đối tượng Customer và lưu thông tin
+            $customer = new Customer();
+            $customer->name = $request->input('name');
+            $customer->gender = $request->input('gender');
+            $customer->email = $request->input('email');
+            $customer->address = $request->input('address');
+            $customer->phone_number = $request->input('phone_number');
+            $customer->note = $request->input('notes');
+            $customer->save();
+        }
+    
+        // Tạo một đối tượng Bill và lưu thông tin đơn hàng
+        $bill = new Bill();
+        $bill->id_customer = $customer->id; // Sử dụng id của khách hàng (có thể là $existingCustomer->id hoặc $customer->id tùy vào trường hợp)
+        $bill->date_order = now()->format('Y-m-d'); // Sử dụng hàm now() thay vì date()
+        $bill->total = $cart->totalPrice;
+        $bill->payment = $request->input('payment_method');
+        $bill->note = $request->input('notes');
+        $bill->status = "New";
+        $bill->save();
+    
+        // Lưu chi tiết đơn hàng vào bảng BillDetail
+        foreach ($cart->items as $key => $value) {
+            $bill_detail = new BillDetail();
+            $bill_detail->id_bill = $bill->id;
+            $bill_detail->id_product = $key;
+            $bill_detail->quantity = $value['qty'];
+            $bill_detail->unit_price = $value['price'] / $value['qty'];
+            $bill_detail->save();
+        }
+    
+        // Xóa giỏ hàng sau khi đã đặt hàng thành công
+        Session::forget('cart');
+    
+        // Gửi email thông báo cho người dùng
+        try {
+            Mail::to($customer->email)->send(new OrderPlaced($bill));
+        } catch (Exception $e) {
+            // Nếu có lỗi xảy ra khi gửi email, bạn có thể ghi log lỗi hoặc thông báo cho người dùng
+            Log::error('Lỗi gửi email: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Đặt hàng thành công nhưng không thể gửi email. Lỗi: ' . $e->getMessage());
+        }
+    
+        // Chuyển hướng về lại trang trước đó và gửi thông báo thành công
+        return redirect()->back()->with('success', 'Đặt hàng thành công');
     }
-
-    // Xóa giỏ hàng sau khi đã đặt hàng thành công
-    Session::forget('cart');
-    // Gửi email thông báo cho người dùng
-Mail::to($customer->email)->send(new OrderPlaced($bill));
-    // Chuyển hướng về lại trang trước đó và gửi thông báo thành công
-    return redirect()->back()->with('success', 'Đặt hàng thành công');
-}
-
 public function updateCart(Request $request)
 {
     // Xử lý cập nhật số lượng sản phẩm trong giỏ hàng

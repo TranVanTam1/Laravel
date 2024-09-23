@@ -111,7 +111,7 @@
                             @endisset
                         </ul>
                     </li>
-                    <li><a href="about.html">Giới thiệu</a></li>
+                    <li><a href="/">Giới thiệu</a></li>
                     <li><a href="{{route('getFavorites')}}">Yêu thích</a></li>
 
                     <li><a href="{{ route('getContact') }}">Liên hệ</a></li>

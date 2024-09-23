@@ -33,7 +33,7 @@
                                     <div class="ribbon-wrapper"><div class="ribbon sale">Sale</div></div>
                                 @endif
                                 <div class="single-item-header">
-                                    <a href="product.html"><img src="../source/image/product/{{$favorite->product->image}}" alt="" height="250px"></a>
+                                    <a href="product.html"><img src="/images/product/{{$favorite->product->image}}" alt="" height="250px"></a>
                                 </div>
                                 <div class="single-item-body">
                                     <p class="single-item-title">{{$favorite->product->name}}</p>

@@ -76,9 +76,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                @if($stt % 3 == 0)
-                                    <div class="space40">&nbsp;</div>
-                                @endif
+                                
                             @endforeach
                         </div>
                         
@@ -126,9 +124,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @if($stt % 3 == 0)
-                                            <div class="space40">&nbsp;</div>
-                                        @endif
+                                        
                                     @endforeach
                                 
                         </div>
